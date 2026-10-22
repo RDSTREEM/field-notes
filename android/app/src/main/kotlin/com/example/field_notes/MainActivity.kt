@@ -1,4 +1,4 @@
-package com.example.field_notes
+package com.nahomabebe.field_notes
 
 import io.flutter.embedding.android.FlutterActivity
 
