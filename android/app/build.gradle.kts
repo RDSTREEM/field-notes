@@ -5,9 +5,9 @@ plugins {
 }
 
 android {
-    namespace = "com.example.field_notes"
+    namespace = "com.nahomabebe.field_notes"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "30.0.16248370" // flutter.ndkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
