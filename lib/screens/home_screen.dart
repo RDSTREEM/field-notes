@@ -6,6 +6,37 @@ import "../colors.dart";
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  String get today {
+    final now = DateTime.now();
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const weekdays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    return "${weekdays[now.weekday - 1]}, ${months[now.month - 1]} $now.day";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,8 +93,8 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 42),
-              const Text(
-                "Thursday, October 22",
+              Text(
+                today,
                 style: TextStyle(
                   color: muted,
                   fontSize: 11,
