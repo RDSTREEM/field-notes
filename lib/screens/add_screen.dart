@@ -39,6 +39,30 @@ class _AddScreen extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(title: const Text("New Note"), foregroundColor: forest),
+      body: SafeArea(
+        child: Form(
+          child: ListView(
+            children: [
+              const Text(
+                "Capture a discovery",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: forest,
+                ),
+              ),
+              const SizedBox(height: 10), // meow
+              const Text(
+                "Write down what caught your attention.",
+                style: TextStyle(color: muted, fontSize: 16),
+              ),
+              TextFormField(controller: _titleController, autofocus: true),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
