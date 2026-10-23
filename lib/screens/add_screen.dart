@@ -2,9 +2,7 @@ import "package:flutter/material.dart";
 
 import '../models/notes.dart';
 
-const forest = Color(0xFF244C3A); // primary color
-const paper = Color(0xFFF7E5EE); // secondary color
-const muted = Color(0xFF77796F);
+import "../colors.dart";
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -43,6 +41,7 @@ class _AddScreen extends State<AddScreen> {
       appBar: AppBar(title: const Text("New Note"), foregroundColor: forest),
       body: SafeArea(
         child: Form(
+          key: _formKey,
           child: ListView(
             children: [
               const Text(
