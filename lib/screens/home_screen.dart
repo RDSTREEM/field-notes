@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
       "Sunday",
     ];
 
-    return "${weekdays[now.weekday - 1]}, ${months[now.month - 1]} $now.day";
+    return "${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}";
   }
 
   @override
