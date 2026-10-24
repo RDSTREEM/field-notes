@@ -20,11 +20,11 @@ class NotesRepo {
       version: 1,
       onCreate: (db, version) async {
         await db.execute("""
-        create table notes (
-          id text primary key
-          title text not null
-          notes text not null
-          category text not null
+        create table notes_table (
+          id text primary key,
+          title text not null,
+          notes text not null,
+          category text not null,
           created_at text not null
         )
         """);
@@ -38,7 +38,7 @@ class NotesRepo {
     final db = await getDb;
 
     await db.insert(
-      'notes',
+      'notes_table',
       note.toMap(),
       conflictAlgorithm: ConflictAlgorithm.abort,
     );
@@ -47,7 +47,7 @@ class NotesRepo {
   Future<List<Notes>> getAll() async {
     final db = await getDb;
 
-    final rows = await db.query('notes', orderBy: 'created_at desc');
+    final rows = await db.query('notes_table', orderBy: 'created_at desc');
 
     return rows.map(Notes.fromMap).toList();
   }
@@ -56,7 +56,7 @@ class NotesRepo {
     final db = await getDb;
 
     final out = await db.query(
-      'notes',
+      'notes_table',
       where: "id = ?",
       whereArgs: [id],
       limit: 1,
@@ -71,7 +71,7 @@ class NotesRepo {
     final db = await getDb;
 
     final count = await db.update(
-      'notes',
+      'notes_table',
       note.toMap(),
       where: 'id = ?',
       whereArgs: [note.id],
@@ -85,6 +85,6 @@ class NotesRepo {
   Future<void> delete(String id) async {
     final db = await getDb;
 
-    await db.delete('notes', where: "id = ?", whereArgs: [id]);
+    await db.delete('notes_table', where: "id = ?", whereArgs: [id]);
   }
 }

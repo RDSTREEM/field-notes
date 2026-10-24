@@ -19,7 +19,7 @@ class Notes {
       "title": title,
       "notes": notes,
       "category": category,
-      "created_at": createdAt,
+      "created_at": createdAt.toUtc().toIso8601String(),
     };
   }
 
@@ -29,7 +29,7 @@ class Notes {
       title: map["title"] as String,
       notes: map["notes"] as String,
       category: map["category"] as String,
-      createdAt: map["created_at"] as DateTime,
+      createdAt: DateTime.parse(map["created_at"] as String).toUtc(),
     ));
   }
 }
