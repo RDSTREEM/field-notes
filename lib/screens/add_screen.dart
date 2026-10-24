@@ -80,6 +80,27 @@ class _AddScreen extends State<AddScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 30),
+              DropdownButtonFormField<String>(
+                initialValue: category,
+                autofocus: true,
+                decoration: const InputDecoration(),
+                items: _categories.map((ct) {
+                  return DropdownMenuItem(value: ct, child: Text(ct));
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => category = value);
+                  }
+                },
+              ),
+
+              const SizedBox(height: 30),
+              TextFormField(
+                controller: _notesController,
+                minLines: 5,
+                maxLines: 6,
+              ),
             ],
           ),
         ),
