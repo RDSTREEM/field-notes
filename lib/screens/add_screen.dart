@@ -100,6 +100,20 @@ class _AddScreen extends State<AddScreen> {
                 controller: _notesController,
                 minLines: 5,
                 maxLines: 6,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(),
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                height: 54,
+                child: FilledButton.icon(
+                  onPressed: saveNote,
+                  label: const Text("Save Note"),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: forest,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
