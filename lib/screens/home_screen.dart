@@ -101,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.5,
                 ),
-              ), // Todo: how the guacamole u get the date in flutter / dart?
+              ),
               const SizedBox(height: 10),
               const Text(
                 "Notice more.\nRemember Everything.",

@@ -38,7 +38,10 @@ class _AddScreen extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("New Note"), foregroundColor: forest),
+      appBar: AppBar(
+        title: const Text("New Note"),
+        foregroundColor: forest,
+      ), // im guessing having an app bar would suck tho
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -57,7 +60,26 @@ class _AddScreen extends State<AddScreen> {
                 "Write down what caught your attention.",
                 style: TextStyle(color: muted, fontSize: 16),
               ),
-              TextFormField(controller: _titleController, autofocus: true),
+              TextFormField(
+                controller: _titleController,
+                autofocus: true,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  labelText: "Title",
+                  hintText: "What did you want to journal?",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.edit_outlined),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Please enter a title";
+                  }
+                  if (value.trim().length > 100) {
+                    return "Keep the title under 100 char's";
+                  }
+                  return null;
+                },
+              ),
             ],
           ),
         ),
