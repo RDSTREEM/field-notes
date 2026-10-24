@@ -1,9 +1,10 @@
 import "package:field_notes/models/notes.dart";
 import "package:flutter/material.dart";
 
-import "../colors.dart";
 import "add_screen.dart";
+import "../colors.dart";
 import "../widgets/note_card.dart";
+import "../data/notes_repo.dart";
 
 // Gosh i had forgotten how annoying flutter was lol
 //
@@ -16,19 +17,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Notes> notes = [];
+  List<Notes> notes = [];
+  bool loading = true;
+  String? loadErr;
 
   Future<void> addNote() async {
-    final note = await Navigator.push<Notes>(
+    final s = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (_) => AddScreen()),
     );
 
-    if (!mounted || note == null) return;
+    if (!mounted) return;
 
-    setState(() {
-      notes.insert(0, note);
-    });
+    if (s == true) await loadNotes();
   }
 
   String get today {
@@ -60,6 +61,32 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return "${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadNotes();
+  }
+
+  Future<void> loadNotes() async {
+    try {
+      final data = await NotesRepo.instance.getAll();
+
+      setState(() {
+        notes = data;
+        loading = false;
+        loadErr = null;
+      });
+
+      if (!mounted) return;
+    } catch (error) {
+      setState(() {
+        loading = false;
+        loadErr = "Could not load the notes";
+      });
+      if (!mounted) return;
+    }
   }
 
   @override
@@ -185,7 +212,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 88),
 
-                    if (notes.isEmpty)
+                    if (loading)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(30),
+                          child: CircularProgressIndicator(color: forest),
+                        ),
+                      )
+                    else if (loadErr != null)
+                      Column(
+                        children: [
+                          Text(loadErr!),
+                          TextButton(
+                            onPressed: loadNotes,
+                            child: const Text("Try again"),
+                          ),
+                        ],
+                      )
+                    else if (notes.isEmpty)
                       emptyState()
                     else ...[
                       const Text(
@@ -194,10 +238,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: muted,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 2,
+                          letterSpacing: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 12),
                       ...notes.map((note) => noteCard(note)),
                     ],
                     SizedBox(
