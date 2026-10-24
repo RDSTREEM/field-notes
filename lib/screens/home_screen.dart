@@ -70,15 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
           child: Column(
-            // it is going to be made up of columns
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: ListView(
                   children: [
-                    // which have the following rows
-                    // hurray managed to remove that weird ruler thingi that came with the flutter extension
-                    // and the tooling is awesome fr
                     Row(
                       children: [
                         Container(
@@ -112,8 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: muted,
                                 fontSize: 12,
                                 letterSpacing: 1.2,
-                              ), // random values, will c how they work on phone later
-                            ), // or smt i am not good at copyright
+                              ),
+                            ),
                           ],
                         ),
                         const Spacer(),
@@ -187,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 88),
 
                     if (notes.isEmpty)
                       emptyState()
