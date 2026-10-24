@@ -151,7 +151,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFE8E5DA)),
                 ),
-
                 child: Row(
                   children: [
                     Icon(Icons.menu_book_outlined, color: forest, size: 30),
@@ -170,7 +169,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            "0 observations collected", // todo: adding the connections to stuff, gonna use mysql most prob
+                            "${notes.length} "
+                            "${notes.length == 1 ? "observation" : "observations"}",
                             style: TextStyle(color: muted, fontSize: 13),
                           ),
                         ],
@@ -179,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+
               const Spacer(),
               Center(
                 child: Icon(
@@ -189,26 +190,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               // bahahaha the center thing is awesome anyway
-              const Center(
-                child: Text(
-                  "The world is full of little wonder.",
-                  textAlign: TextAlign.center,
+              if (notes.isEmpty)
+                emptyState()
+              else ...[
+                const Text(
+                  "RECENT DISCOVERIES",
                   style: TextStyle(
-                    color: forest,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                    color: muted,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 2,
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              const Center(
-                child: Text(
-                  "Your first discovery is waiting to be recorded.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: muted, fontSize: 13, height: 15),
-                ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 20),
+                ...notes.map((note) => noteCard(note)),
+              ],
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -234,4 +230,67 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+Widget emptyState() {
+  return ListView(
+    children: [
+      Center(
+        child: Text(
+          "The world is full of little wonder.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: forest,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      const Center(
+        child: Text(
+          "Your first discovery is waiting to be recorded.",
+          textAlign: TextAlign.center,
+          style: TextStyle(color: muted, fontSize: 13, height: 15),
+        ),
+      ),
+      const SizedBox(height: 24),
+    ],
+  );
+}
+
+Widget noteCard(Notes note) {
+  return Card(
+    color: paper,
+    elevation: 0,
+    margin: const EdgeInsets.only(bottom: 30),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadiusGeometry.circular(20),
+      side: const BorderSide(color: Color(0xFFE8E5DA)),
+    ),
+    child: ListTile(
+      contentPadding: const EdgeInsets.all(20),
+      leading: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: paper,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: const Icon(Icons.spa_outlined, color: forest),
+      ),
+      title: Text(
+        note.title,
+        style: const TextStyle(color: forest, fontWeight: FontWeight.w700),
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 30),
+        child: Text(
+          '${note.category} ${note.createdAt}'
+          '${note.notes.isEmpty ? '' : '\n ${note.notes}'}',
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ),
+  );
 }
