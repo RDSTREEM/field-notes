@@ -96,7 +96,11 @@ class _AddScreen extends State<AddScreen> {
               DropdownButtonFormField<String>(
                 initialValue: category,
                 autofocus: true,
-                decoration: const InputDecoration(),
+                decoration: const InputDecoration(
+                  label: Text("Category"),
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.category_outlined),
+                ),
                 items: _categories.map((ct) {
                   return DropdownMenuItem(value: ct, child: Text(ct));
                 }).toList(),
@@ -113,7 +117,12 @@ class _AddScreen extends State<AddScreen> {
                 minLines: 5,
                 maxLines: 6,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(),
+                decoration: const InputDecoration(
+                  labelText: "Field Notes",
+                  hintText: "What did you observe? Add any details",
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 30),
               SizedBox(
