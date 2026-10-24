@@ -33,7 +33,19 @@ class _AddScreen extends State<AddScreen> {
     super.dispose();
   }
 
-  void saveNote() {}
+  void saveNote() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final note = Notes(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      title: _titleController.text.trim(),
+      notes: _notesController.text.trim(),
+      category: category,
+      createdAt: DateTime.now().toUtc(),
+    );
+
+    Navigator.pop(context, note);
+  }
 
   @override
   Widget build(BuildContext context) {
