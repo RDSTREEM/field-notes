@@ -19,7 +19,7 @@ class _AddScreen extends State<AddScreen> {
   String category = "Nature";
 
   final List<String> _categories = [
-    "Natures",
+    "Nature",
     "Places",
     "Landmarks",
     "Wildlife",
@@ -55,88 +55,91 @@ class _AddScreen extends State<AddScreen> {
         foregroundColor: forest,
       ), // im guessing having an app bar would suck tho
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const Text(
-                "Capture a discovery",
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: forest,
-                ),
-              ),
-              const SizedBox(height: 10), // meow
-              const Text(
-                "Write down what caught your attention.",
-                style: TextStyle(color: muted, fontSize: 16),
-              ),
-              TextFormField(
-                controller: _titleController,
-                autofocus: true,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: "Title",
-                  hintText: "What did you want to journal?",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.edit_outlined),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Please enter a title";
-                  }
-                  if (value.trim().length > 100) {
-                    return "Keep the title under 100 char's";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              DropdownButtonFormField<String>(
-                initialValue: category,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  label: Text("Category"),
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-                items: _categories.map((ct) {
-                  return DropdownMenuItem(value: ct, child: Text(ct));
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => category = value);
-                  }
-                },
-              ),
-
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _notesController,
-                minLines: 5,
-                maxLines: 6,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: "Field Notes",
-                  hintText: "What did you observe? Add any details",
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                height: 54,
-                child: FilledButton.icon(
-                  onPressed: saveNote,
-                  label: const Text("Save Note"),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: forest,
-                    foregroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                const Text(
+                  "Capture a discovery",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: forest,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10), // meow
+                const Text(
+                  "Write down what caught your attention.",
+                  style: TextStyle(color: muted, fontSize: 16),
+                ),
+                TextFormField(
+                  controller: _titleController,
+                  autofocus: true,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    labelText: "Title",
+                    hintText: "What did you want to journal?",
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.edit_outlined),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Please enter a title";
+                    }
+                    if (value.trim().length > 100) {
+                      return "Keep the title under 100 char's";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 30),
+                DropdownButtonFormField<String>(
+                  initialValue: category,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    label: Text("Category"),
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.category_outlined),
+                  ),
+                  items: _categories.map((ct) {
+                    return DropdownMenuItem(value: ct, child: Text(ct));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => category = value);
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _notesController,
+                  minLines: 5,
+                  maxLines: 6,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    labelText: "Field Notes",
+                    hintText: "What did you observe? Add any details",
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  height: 54,
+                  child: FilledButton.icon(
+                    onPressed: saveNote,
+                    label: const Text("Save Note"),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: forest,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

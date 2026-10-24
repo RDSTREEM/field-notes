@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 height: 56,
                 child: FilledButton.icon(
-                  onPressed: () {},
+                  onPressed: addNote,
                   icon: const Icon(Icons.add),
                   label: const Text(
                     "Record an observation",
