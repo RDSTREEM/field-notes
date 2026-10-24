@@ -13,6 +13,7 @@ Widget noteCard(Notes note) {
       side: const BorderSide(color: Color(0xFFE8E5DA)),
     ),
     child: ListTile(
+      onTap: () {},
       contentPadding: const EdgeInsets.all(20),
       leading: Container(
         padding: const EdgeInsets.all(15),

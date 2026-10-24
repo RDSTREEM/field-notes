@@ -4,6 +4,7 @@ import "package:uuid/uuid.dart";
 import '../models/notes.dart';
 import "../colors.dart";
 import "../data/notes_repo.dart"; // ughhh dart being a ; language trips me up sometimes, its like i spent 1 hour just putting semicolons
+import "../models/category.dart";
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -18,14 +19,6 @@ class _AddScreen extends State<AddScreen> {
   final _notesController = TextEditingController();
 
   String category = "Nature";
-
-  final List<String> _categories = [
-    "Nature",
-    "Places",
-    "Landmarks",
-    "Wildlife",
-    "Other",
-  ];
 
   @override
   void dispose() {
@@ -80,7 +73,7 @@ class _AddScreen extends State<AddScreen> {
                     color: forest,
                   ),
                 ),
-                const SizedBox(height: 10), // meow
+                const SizedBox(height: 20), // meow
                 const Text(
                   "Write down what caught your attention.",
                   style: TextStyle(color: muted, fontSize: 16),
@@ -105,7 +98,7 @@ class _AddScreen extends State<AddScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   initialValue: category,
                   autofocus: true,
@@ -114,7 +107,7 @@ class _AddScreen extends State<AddScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.category_outlined),
                   ),
-                  items: _categories.map((ct) {
+                  items: Categories.all.map((ct) {
                     return DropdownMenuItem(value: ct, child: Text(ct));
                   }).toList(),
                   onChanged: (value) {
@@ -124,7 +117,7 @@ class _AddScreen extends State<AddScreen> {
                   },
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _notesController,
                   minLines: 5,
@@ -137,7 +130,7 @@ class _AddScreen extends State<AddScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 SizedBox(
                   height: 54,
                   child: FilledButton.icon(
