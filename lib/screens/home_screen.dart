@@ -6,9 +6,6 @@ import "../colors.dart";
 import "../widgets/note_card.dart";
 import "../data/notes_repo.dart";
 
-// Gosh i had forgotten how annoying flutter was lol
-//
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -92,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // start of the body of the home page
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),

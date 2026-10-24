@@ -3,37 +3,37 @@ import "package:uuid/uuid.dart";
 
 import '../models/notes.dart';
 import "../colors.dart";
-import "../data/notes_repo.dart"; // ughhh dart being a ; language trips me up sometimes, its like i spent 1 hour just putting semicolons
+import "../data/notes_repo.dart";
 import "../models/category.dart";
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
 
   @override
-  State<AddScreen> createState() => _AddScreen();
+  State<AddScreen> createState() => AddScreenState();
 }
 
-class _AddScreen extends State<AddScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _notesController = TextEditingController();
+class AddScreenState extends State<AddScreen> {
+  final formKey = GlobalKey<FormState>();
+  final titleController = TextEditingController();
+  final notesController = TextEditingController();
 
   String category = "Nature";
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _notesController.dispose();
+    titleController.dispose();
+    notesController.dispose();
     super.dispose();
   }
 
   Future<void> saveNote() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) return;
 
     final note = Notes(
       id: const Uuid().v4(),
-      title: _titleController.text.trim(),
-      notes: _notesController.text.trim(),
+      title: titleController.text.trim(),
+      notes: notesController.text.trim(),
       category: category,
       createdAt: DateTime.now().toUtc(),
     );
@@ -54,15 +54,12 @@ class _AddScreen extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("New Note"),
-        foregroundColor: forest,
-      ), // im guessing having an app bar would suck tho
+      appBar: AppBar(title: const Text("New Note"), foregroundColor: forest),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
           child: Form(
-            key: _formKey,
+            key: formKey,
             child: ListView(
               children: [
                 const Text(
@@ -73,13 +70,14 @@ class _AddScreen extends State<AddScreen> {
                     color: forest,
                   ),
                 ),
+
                 const SizedBox(height: 20), // meow
                 const Text(
                   "Write down what caught your attention.",
                   style: TextStyle(color: muted, fontSize: 16),
                 ),
                 TextFormField(
-                  controller: _titleController,
+                  controller: titleController,
                   autofocus: true,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
@@ -98,6 +96,7 @@ class _AddScreen extends State<AddScreen> {
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   initialValue: category,
@@ -119,7 +118,7 @@ class _AddScreen extends State<AddScreen> {
 
                 const SizedBox(height: 20),
                 TextFormField(
-                  controller: _notesController,
+                  controller: notesController,
                   minLines: 5,
                   maxLines: 6,
                   textCapitalization: TextCapitalization.sentences,
