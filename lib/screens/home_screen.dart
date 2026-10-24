@@ -1,10 +1,34 @@
+import "package:field_notes/models/notes.dart";
 import "package:flutter/material.dart";
 
 import "../colors.dart";
+import "add_screen.dart";
 
 // Gosh i had forgotten how annoying flutter was lol
-class HomeScreen extends StatelessWidget {
+//
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<Notes> notes = [];
+
+  Future<void> addNote() async {
+    final note = await Navigator.push<Notes>(
+      context,
+      MaterialPageRoute(builder: (_) => AddScreen()),
+    );
+
+    if (!mounted || note == null) return;
+
+    setState(() {
+      notes.insert(0, note);
+    });
+  }
 
   String get today {
     final now = DateTime.now();
