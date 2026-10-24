@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
+import "package:uuid/uuid.dart";
 
 import '../models/notes.dart';
-
 import "../colors.dart";
+import "../data/notes_repo.dart"; // ughhh dart being a ; language trips me up sometimes, its like i spent 1 hour just putting semicolons
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -33,18 +34,28 @@ class _AddScreen extends State<AddScreen> {
     super.dispose();
   }
 
-  void saveNote() {
+  Future<void> saveNote() async {
     if (!_formKey.currentState!.validate()) return;
 
     final note = Notes(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      id: const Uuid().v4(),
       title: _titleController.text.trim(),
       notes: _notesController.text.trim(),
       category: category,
       createdAt: DateTime.now().toUtc(),
     );
 
-    Navigator.pop(context, note);
+    try {
+      await NotesRepo.instance.create(note);
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not save the note. Try again')),
+      );
+    }
   }
 
   @override

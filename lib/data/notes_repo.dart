@@ -8,6 +8,8 @@ class NotesRepo {
 
   Database? _db;
 
+  static final NotesRepo instance = NotesRepo._();
+
   Future<Database> get getDb async {
     if (_db != null) return _db!;
 
