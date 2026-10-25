@@ -87,4 +87,36 @@ class NotesRepo {
 
     await db.delete('notes_table', where: "id = ?", whereArgs: [id]);
   }
+
+  Future<List<Notes>> search({
+    String query = "",
+    String? category,
+    bool des = true,
+  }) async {
+    final db = await getDb;
+
+    final trimmed = query.trim();
+    final conditions = <String>[];
+    final args = <Object?>[];
+
+    if (trimmed.isEmpty) {
+      conditions.add("(title like ? or notes like ?)");
+      final pattern = "%$trimmed%";
+      args.addAll([pattern, pattern]);
+    }
+
+    if (category != null && category.isNotEmpty) {
+      conditions.add("category = ?");
+      args.add(category);
+    }
+
+    final out = await db.query(
+      "notes_table",
+      where: conditions.isEmpty ? null : conditions.join(' AND '),
+      whereArgs: args.isEmpty ? null : args,
+      orderBy: "created_at ${des ? 'desc' : 'asc'}",
+    );
+
+    return out.map(Notes.fromMap).toList();
+  }
 }
