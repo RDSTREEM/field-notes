@@ -111,6 +111,8 @@ class HomeScreenState extends State<HomeScreen> {
     } else if (mounted) {
       await loadNotes();
     }
+
+    filter();
   }
 
   Future<void> filter() async {
@@ -278,8 +280,22 @@ class HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         ),
+                        const SizedBox(width: 12),
+                        IconButton(
+                          tooltip: asc ? "Newest first" : "Oldest first",
+                          onPressed: () {
+                            asc = !asc;
+                            filter();
+                          },
+                          icon: Icon(
+                            asc ? Icons.south_rounded : Icons.north_rounded,
+                            color: forest,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
+
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
