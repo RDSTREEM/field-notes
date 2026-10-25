@@ -40,7 +40,7 @@ class Notes {
       notes: map["notes"] as String,
       category: map["category"] as String,
       createdAt: DateTime.parse(map["created_at"] as String).toUtc(),
-      imagePath: map['image_path'] as String,
+      imagePath: map['image_path'] as String?,
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
     ));

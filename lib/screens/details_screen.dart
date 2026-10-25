@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import "package:url_launcher/url_launcher.dart";
+
+import "dart:io";
 
 import "../data/notes_repo.dart";
 import "../models/notes.dart";
 import "add_screen.dart";
-import "../colors.dart";
 
 class DetailsScreen extends StatefulWidget {
   final Notes note;
@@ -99,23 +101,51 @@ class DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
+  Future<void> openMap() async {
+    final latitude = note.latitude;
+    final longitude = note.longitude;
+
+    if (latitude == null || longitude == null) return;
+
+    final url = Uri.https("www.google.com", "/maps/search", {
+      "api": "1",
+      "query": "$latitude,$longitude",
+    });
+
+    try {
+      final opened = await launchUrl(url, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Could not open maps")));
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Could not open maps")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final hasLocation = note.latitude != null && note.longitude != null;
+    final hasImage =
+        note.imagePath != null && File(note.imagePath!).existsSync();
+
     return Scaffold(
-      backgroundColor: paper,
       appBar: AppBar(
-        backgroundColor: paper,
-        title: Text("Field Journal"),
+        title: const Text('Field Journal'),
         actions: [
           IconButton(
-            tooltip: "Edit Note",
+            tooltip: 'Edit Note',
             onPressed: edit,
-            icon: Icon(Icons.edit_outlined),
+            icon: const Icon(Icons.edit_outlined),
           ),
           IconButton(
+            tooltip: 'Delete Note',
             onPressed: delete,
-            icon: Icon(Icons.delete_outline),
-            tooltip: "Delete Note",
+            icon: const Icon(Icons.delete_outline),
           ),
           const SizedBox(width: 8),
         ],
@@ -123,19 +153,22 @@ class DetailsScreenState extends State<DetailsScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         children: [
-          Container(
+          Align(
             alignment: Alignment.centerLeft,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: forest.withValues(alpha: 0.09),
+                color: colors.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 14,
+                ),
                 child: Text(
                   note.category.toUpperCase(),
-                  style: const TextStyle(
-                    color: forest,
+                  style: TextStyle(
+                    color: colors.primary,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.2,
@@ -148,7 +181,7 @@ class DetailsScreenState extends State<DetailsScreen> {
           Text(
             note.title,
             style: TextStyle(
-              color: forest,
+              color: colors.onSurface,
               fontSize: 32,
               height: 1.15,
               fontWeight: FontWeight.w700,
@@ -157,32 +190,66 @@ class DetailsScreenState extends State<DetailsScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, size: 15, color: muted),
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 15,
+                color: colors.onSurface.withValues(alpha: 0.65),
+              ),
               const SizedBox(width: 8),
-              Text(date, style: const TextStyle(color: muted, fontSize: 13)),
+              Text(
+                date,
+                style: TextStyle(
+                  color: colors.onSurface.withValues(alpha: 0.65),
+                  fontSize: 13,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 32),
-          const Text(
-            "FIELD NOTES",
+          Text(
+            'FIELD NOTES',
             style: TextStyle(
-              color: muted,
+              color: colors.onSurface.withValues(alpha: 0.65),
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.5,
             ),
           ),
           const SizedBox(height: 14),
+          if (hasImage) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.file(File(note.imagePath!), fit: BoxFit.cover),
+            ),
+            const SizedBox(height: 18),
+          ],
           Text(
             note.notes.isEmpty
-                ? "No notes were recorded for this one."
+                ? 'No notes were recorded for this one.'
                 : note.notes,
-            style: const TextStyle(
-              color: Color(0xFF30382F),
+            style: TextStyle(
+              color: colors.onSurface,
               fontSize: 16,
               height: 1.8,
             ),
           ),
+          if (hasLocation) ...[
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: openMap,
+              icon: const Icon(Icons.map_outlined),
+              label: const Text('Open in Maps'),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${note.latitude!.toStringAsFixed(5)}, '
+              '${note.longitude!.toStringAsFixed(5)}',
+              style: TextStyle(
+                color: colors.onSurface.withValues(alpha: 0.65),
+                fontSize: 12,
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -1,16 +1,15 @@
-import "package:flutter/material.dart";
-import "package:uuid/uuid.dart";
-import "package:image_picker/image_picker.dart";
-import "package:path_provider/path_provider.dart";
-import 'package:path/path.dart' as p;
-import "package:geolocator/geolocator.dart";
+import 'dart:io';
 
-import "dart:io";
+import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:geolocator/geolocator.dart';
 
 import '../models/notes.dart';
-import "../colors.dart";
-import "../data/notes_repo.dart";
-import "../models/category.dart";
+import '../data/notes_repo.dart';
+import '../models/category.dart';
 
 class AddScreen extends StatefulWidget {
   final Notes? note;
@@ -23,7 +22,6 @@ class AddScreen extends StatefulWidget {
 
 class AddScreenState extends State<AddScreen> {
   final imagePicker = ImagePicker();
-
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final notesController = TextEditingController();
@@ -33,18 +31,17 @@ class AddScreenState extends State<AddScreen> {
   String? path;
   double? latitude;
   double? longitude;
-
   bool loc = false;
+  bool saving = false;
 
   @override
   void initState() {
     super.initState();
 
     final note = widget.note;
-
     titleController.text = note?.title ?? '';
     notesController.text = note?.notes ?? '';
-    category = note?.category ?? "Nature";
+    category = note?.category ?? 'Nature';
     path = note?.imagePath;
     latitude = note?.latitude;
     longitude = note?.longitude;
@@ -68,89 +65,80 @@ class AddScreenState extends State<AddScreen> {
       if (picked == null || !mounted) return;
 
       final dir = await getApplicationSupportDirectory();
-      final pDir = Directory(p.join(dir.path, "photos"));
-
-      await pDir.create(recursive: true);
+      final photosDir = Directory(p.join(dir.path, 'photos'));
+      await photosDir.create(recursive: true);
 
       final ext = p.extension(picked.path);
-      final dest = p.join(pDir.path, "${const Uuid().v4()}$ext");
-
+      final dest = p.join(photosDir.path, '${const Uuid().v4()}$ext');
       await File(picked.path).copy(dest);
 
       if (!mounted) return;
-
-      setState(() {
-        path = dest;
-      });
-    } catch (e) {
+      setState(() => path = dest);
+    } catch (_) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Could not attach this photo")),
+        const SnackBar(content: Text('Could not attach this photo')),
       );
     }
   }
 
   Future<void> location() async {
-    setState(() {
-      loc = true;
-    });
+    setState(() => loc = true);
 
     try {
-      final e = await Geolocator.isLocationServiceEnabled();
-
-      if (!e) {
-        throw Exception("Enable location services first");
+      final enabled = await Geolocator.isLocationServiceEnabled();
+      if (!enabled) {
+        throw Exception('Enable location services first');
       }
 
-      var perm = await Geolocator.checkPermission();
+      var permission = await Geolocator.checkPermission();
 
-      if (perm == LocationPermission.denied) {
-        perm = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
       }
 
-      if (perm == LocationPermission.denied ||
-          perm == LocationPermission.deniedForever) {
-        throw Exception("Location permission not granted");
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        throw Exception('Location permission not granted');
       }
 
-      final pos = await Geolocator.getCurrentPosition();
+      final position = await Geolocator.getCurrentPosition();
 
       if (!mounted) return;
 
       setState(() {
-        latitude = pos.latitude;
-        longitude = pos.longitude;
+        latitude = position.latitude;
+        longitude = position.longitude;
       });
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst("Exception: ", ""))),
+        SnackBar(
+          content: Text(error.toString().replaceFirst('Exception: ', '')),
+        ),
       );
     } finally {
-      if (mounted) {
-        setState(() {
-          loc = false;
-        });
-      }
+      if (mounted) setState(() => loc = false);
     }
   }
 
   Future<void> saveNote() async {
-    if (!formKey.currentState!.validate()) return;
+    if (saving || !formKey.currentState!.validate()) return;
+
+    setState(() => saving = true);
 
     final existing = widget.note;
-
     final note = Notes(
       id: existing?.id ?? const Uuid().v4(),
       title: titleController.text.trim(),
       notes: notesController.text.trim(),
       category: category,
       createdAt: existing?.createdAt ?? DateTime.now().toUtc(),
-      imagePath: path ?? existing?.imagePath,
-      latitude: latitude ?? existing?.latitude,
-      longitude: longitude ?? existing?.longitude,
+      imagePath: path,
+      latitude: latitude,
+      longitude: longitude,
     );
 
     try {
@@ -164,8 +152,10 @@ class AddScreenState extends State<AddScreen> {
 
       if (!mounted) return;
       Navigator.pop(context, true);
-    } catch (error) {
+    } catch (_) {
       if (!mounted) return;
+
+      setState(() => saving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not save the note. Try again')),
       );
@@ -174,10 +164,12 @@ class AddScreenState extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.note == null ? "New Note" : "Edit Note"),
-        foregroundColor: forest,
+        title: Text(widget.note == null ? 'New Note' : 'Edit Note'),
       ),
       body: SafeArea(
         child: Padding(
@@ -186,48 +178,46 @@ class AddScreenState extends State<AddScreen> {
             key: formKey,
             child: ListView(
               children: [
-                const Text(
-                  "Capture a discovery",
-                  style: TextStyle(
+                Text(
+                  'Capture a discovery',
+                  style: textTheme.headlineMedium?.copyWith(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: forest,
+                    color: colors.onSurface,
                   ),
                 ),
-
-                const SizedBox(height: 20), // meow
-                const Text(
-                  "Write down what caught your attention.",
-                  style: TextStyle(color: muted, fontSize: 16),
+                const SizedBox(height: 20),
+                Text(
+                  'Write down what caught your attention.',
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colors.onSurface.withValues(alpha: 0.7),
+                  ),
                 ),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: titleController,
                   autofocus: true,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
-                    labelText: "Title",
-                    hintText: "What did you want to journal?",
-                    border: OutlineInputBorder(),
+                    labelText: 'Title',
+                    hintText: 'What did you want to journal?',
                     prefixIcon: Icon(Icons.edit_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return "Please enter a title";
+                      return 'Please enter a title';
                     }
                     if (value.trim().length > 100) {
-                      return "Keep the title under 100 char's";
+                      return 'Keep the title under 100 characters';
                     }
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   initialValue: category,
-                  autofocus: true,
                   decoration: const InputDecoration(
-                    label: Text("Category"),
-                    border: OutlineInputBorder(),
+                    labelText: 'Category',
                     prefixIcon: Icon(Icons.category_outlined),
                   ),
                   items: Categories.all.map((ct) {
@@ -239,7 +229,6 @@ class AddScreenState extends State<AddScreen> {
                     }
                   },
                 ),
-
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: notesController,
@@ -247,23 +236,23 @@ class AddScreenState extends State<AddScreen> {
                   maxLines: 6,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
-                    labelText: "Field Notes",
-                    hintText: "What did you observe? Add any details",
+                    labelText: 'Field Notes',
+                    hintText: 'What did you observe? Add any details',
                     alignLabelWithHint: true,
-                    border: OutlineInputBorder(),
                   ),
                 ),
-
                 const SizedBox(height: 24),
                 Text(
-                  "Attachments",
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(color: forest, fontWeight: FontWeight.w700),
+                  'Attachments',
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                if (path != null && File(path!).existsSync())
+                if (path != null && File(path!).existsSync()) ...[
                   ClipRRect(
-                    borderRadius: BorderRadiusGeometry.circular(16),
+                    borderRadius: BorderRadius.circular(16),
                     child: Image.file(
                       File(path!),
                       height: 220,
@@ -271,42 +260,33 @@ class AddScreenState extends State<AddScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-
+                  const SizedBox(height: 10),
+                ],
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
                   children: [
                     OutlinedButton.icon(
                       onPressed: () => pick(ImageSource.camera),
-                      label: const Text("Take photo"),
-                      icon: Icon(Icons.camera_alt_outlined),
+                      icon: const Icon(Icons.camera_alt_outlined),
+                      label: const Text('Take photo'),
                     ),
                     OutlinedButton.icon(
                       onPressed: () => pick(ImageSource.gallery),
-                      label: const Text("Choose photo"),
-                      icon: Icon(Icons.photo_library_outlined),
+                      icon: const Icon(Icons.photo_library_outlined),
+                      label: const Text('Choose photo'),
                     ),
-
                     if (path != null)
                       TextButton.icon(
-                        onPressed: () => setState(() {
-                          path = null;
-                        }),
+                        onPressed: () => setState(() => path = null),
                         icon: const Icon(Icons.delete_outline),
-                        label: const Text("Remove photo"),
+                        label: const Text('Remove photo'),
                       ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 OutlinedButton.icon(
                   onPressed: loc ? null : location,
-                  label: Text(
-                    loc
-                        ? "Getting location ..."
-                        : latitude == null
-                        ? "Add current location"
-                        : "Update location",
-                  ),
                   icon: loc
                       ? const SizedBox(
                           width: 18,
@@ -314,14 +294,22 @@ class AddScreenState extends State<AddScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.my_location),
+                  label: Text(
+                    loc
+                        ? 'Getting location...'
+                        : latitude == null
+                        ? 'Add current location'
+                        : 'Update location',
+                  ),
                 ),
-
                 if (latitude != null && longitude != null) ...[
                   const SizedBox(height: 8),
-
                   Text(
-                    "Location: ${latitude!.toStringAsFixed(5)}, ${longitude!.toStringAsFixed(5)}",
-                    style: const TextStyle(color: muted),
+                    'Location: ${latitude!.toStringAsFixed(5)}, '
+                    '${longitude!.toStringAsFixed(5)}',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onSurface.withValues(alpha: 0.7),
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
@@ -330,20 +318,22 @@ class AddScreenState extends State<AddScreen> {
                         longitude = null;
                       });
                     },
-                    child: const Text("Remove location"),
+                    child: const Text('Remove location'),
                   ),
                 ],
-
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 54,
                   child: FilledButton.icon(
-                    onPressed: saveNote,
-                    label: const Text("Save Note"),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: forest,
-                      foregroundColor: Colors.white,
-                    ),
+                    onPressed: saving ? null : saveNote,
+                    icon: saving
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save_outlined),
+                    label: Text(saving ? 'Saving...' : 'Save Note'),
                   ),
                 ),
               ],
