@@ -193,27 +193,6 @@ class HomeScreenState extends State<HomeScreen> {
                         Icon(Icons.wb_sunny_outlined, color: forest, size: 25),
                       ],
                     ),
-                    TextField(
-                      controller: searchController,
-                      onChanged: (val) {
-                        q = val;
-                        filter();
-                      },
-                      decoration: InputDecoration(
-                        hintText: "Search your discoveries...",
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: q.isEmpty
-                            ? null
-                            : IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
-                                  searchController.clear();
-                                  q = "";
-                                  filter();
-                                },
-                              ),
-                      ),
-                    ),
                     const SizedBox(height: 42),
                     Text(
                       today,
@@ -241,6 +220,66 @@ class HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(color: muted, fontSize: 15, height: 1.5),
                     ),
                     const SizedBox(height: 30),
+                    TextField(
+                      controller: searchController,
+                      onChanged: (val) {
+                        q = val;
+                        filter();
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Search your discoveries...",
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: q.isEmpty
+                            ? null
+                            : IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  searchController.clear();
+                                  q = "";
+                                  filter();
+                                },
+                              ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String?>(
+                            initialValue: cat,
+                            isExpanded: true,
+                            decoration: const InputDecoration(
+                              labelText: "Category",
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            items: [
+                              const DropdownMenuItem<String?>(
+                                value: null,
+                                child: Text("All categories"),
+                              ),
+                              ...Categories.all.map(
+                                (c) => DropdownMenuItem<String?>(
+                                  value: c,
+                                  child: Text(c),
+                                ),
+                              ),
+                            ],
+                            onChanged: (val) {
+                              cat = val;
+                              filter();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -281,7 +320,7 @@ class HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 88),
+                    // const SizedBox(height: 88),
 
                     if (loading)
                       const Center(
