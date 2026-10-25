@@ -1,22 +1,30 @@
 import "package:field_notes/models/notes.dart";
+import "package:field_notes/screens/details_screen.dart";
 import "package:flutter/material.dart";
 
 import "add_screen.dart";
 import "../colors.dart";
 import "../widgets/note_card.dart";
 import "../data/notes_repo.dart";
+import "../models/category.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   List<Notes> notes = [];
   bool loading = true;
   String? loadErr;
+
+  final searchController = TextEditingController();
+
+  String q = "";
+  String? cat;
+  bool asc = true;
 
   Future<void> addNote() async {
     final s = await Navigator.push<bool>(
@@ -66,6 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
     loadNotes();
   }
 
+  @override
+  dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> loadNotes() async {
     try {
       final data = await NotesRepo.instance.getAll();
@@ -83,6 +97,46 @@ class _HomeScreenState extends State<HomeScreen> {
         loadErr = "Could not load the notes";
       });
       if (!mounted) return;
+    }
+  }
+
+  Future<void> openNote(Notes note) async {
+    final deleted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => DetailsScreen(note: note)),
+    );
+
+    if (deleted == true && mounted) {
+      await loadNotes();
+    } else if (mounted) {
+      await loadNotes();
+    }
+  }
+
+  Future<void> filter() async {
+    setState(() => loading = true);
+
+    try {
+      final res = await NotesRepo.instance.search(
+        query: q,
+        category: cat,
+        des: asc,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        notes = res;
+        loading = false;
+        loadErr = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+        loadErr = "Could not search";
+      });
     }
   }
 
@@ -138,6 +192,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Spacer(),
                         Icon(Icons.wb_sunny_outlined, color: forest, size: 25),
                       ],
+                    ),
+                    TextField(
+                      controller: searchController,
+                      onChanged: (val) {
+                        q = val;
+                        filter();
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Search your discoveries...",
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: q.isEmpty
+                            ? null
+                            : IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  searchController.clear();
+                                  q = "";
+                                  filter();
+                                },
+                              ),
+                      ),
                     ),
                     const SizedBox(height: 42),
                     Text(
