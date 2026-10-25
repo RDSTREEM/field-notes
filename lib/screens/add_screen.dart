@@ -91,6 +91,52 @@ class AddScreenState extends State<AddScreen> {
     }
   }
 
+  Future<void> location() async {
+    setState(() {
+      loc = true;
+    });
+
+    try {
+      final e = await Geolocator.isLocationServiceEnabled();
+
+      if (!e) {
+        throw Exception("Enable location services first");
+      }
+
+      var perm = await Geolocator.checkPermission();
+
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        throw Exception("Location permission not granted");
+      }
+
+      final pos = await Geolocator.getCurrentPosition();
+
+      if (!mounted) return;
+
+      setState(() {
+        latitude = pos.latitude;
+        longitude = pos.longitude;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst("Exception: ", ""))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          loc = false;
+        });
+      }
+    }
+  }
+
   Future<void> saveNote() async {
     if (!formKey.currentState!.validate()) return;
 
