@@ -253,6 +253,87 @@ class AddScreenState extends State<AddScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
+
+                const SizedBox(height: 24),
+                Text(
+                  "Attachments",
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(color: forest, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 12),
+                if (path != null && File(path!).existsSync())
+                  ClipRRect(
+                    borderRadius: BorderRadiusGeometry.circular(16),
+                    child: Image.file(
+                      File(path!),
+                      height: 220,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () => pick(ImageSource.camera),
+                      label: const Text("Take photo"),
+                      icon: Icon(Icons.camera_alt_outlined),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => pick(ImageSource.gallery),
+                      label: const Text("Choose photo"),
+                      icon: Icon(Icons.photo_library_outlined),
+                    ),
+
+                    if (path != null)
+                      TextButton.icon(
+                        onPressed: () => setState(() {
+                          path = null;
+                        }),
+                        icon: const Icon(Icons.delete_outline),
+                        label: const Text("Remove photo"),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                OutlinedButton.icon(
+                  onPressed: loc ? null : location,
+                  label: Text(
+                    loc
+                        ? "Getting location ..."
+                        : latitude == null
+                        ? "Add current location"
+                        : "Update location",
+                  ),
+                  icon: loc
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.my_location),
+                ),
+
+                if (latitude != null && longitude != null) ...[
+                  const SizedBox(height: 8),
+
+                  Text(
+                    "Location: ${latitude!.toStringAsFixed(5)}, ${longitude!.toStringAsFixed(5)}",
+                    style: const TextStyle(color: muted),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        latitude = null;
+                        longitude = null;
+                      });
+                    },
+                    child: const Text("Remove location"),
+                  ),
+                ],
+
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 54,
