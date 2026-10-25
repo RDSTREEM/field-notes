@@ -75,7 +75,10 @@ class AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("New Note"), foregroundColor: forest),
+      appBar: AppBar(
+        title: Text(widget.note == null ? "New Note" : "Edit Note"),
+        foregroundColor: forest,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
