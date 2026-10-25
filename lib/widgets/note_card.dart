@@ -2,12 +2,14 @@ import "package:flutter/material.dart";
 
 import "../colors.dart";
 import "../models/notes.dart";
-import "../screens/details_screen.dart";
+
+// import "../screens/details_screen.dart";
 
 class NoteCard extends StatelessWidget {
   final Notes note;
+  final VoidCallback tap;
 
-  const NoteCard({super.key, required this.note});
+  const NoteCard({super.key, required this.note, required this.tap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +22,12 @@ class NoteCard extends StatelessWidget {
         side: const BorderSide(color: Color(0xFFE8E5DA)),
       ),
       child: ListTile(
-        onTap: () {
+        /* onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => DetailsScreen(note: note)),
           );
-        },
+        }, */
         contentPadding: const EdgeInsets.all(20),
         leading: Container(
           padding: const EdgeInsets.all(15),

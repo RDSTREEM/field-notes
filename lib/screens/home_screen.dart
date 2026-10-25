@@ -101,16 +101,13 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> openNote(Notes note) async {
-    final deleted = await Navigator.push<bool>(
+    await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (_) => DetailsScreen(note: note)),
     );
 
-    if (deleted == true && mounted) {
-      await filter();
-    } else if (mounted) {
-      await filter();
-    }
+    if (!mounted) return;
+    await filter();
   }
 
   Future<void> filter() async {
@@ -369,7 +366,10 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      ...notes.map((note) => NoteCard(note: note)),
+                      ...notes.map(
+                        (note) =>
+                            NoteCard(note: note, tap: () => openNote(note)),
+                      ),
                     ],
                     SizedBox(
                       width: double.infinity,

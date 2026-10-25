@@ -46,11 +46,11 @@ class AddScreenState extends State<AddScreen> {
     final existing = widget.note;
 
     final note = Notes(
-      id: const Uuid().v4(),
+      id: existing?.id ?? const Uuid().v4(),
       title: titleController.text.trim(),
       notes: notesController.text.trim(),
       category: category,
-      createdAt: DateTime.now().toUtc(),
+      createdAt: existing?.createdAt ?? DateTime.now().toUtc(),
     );
 
     try {
