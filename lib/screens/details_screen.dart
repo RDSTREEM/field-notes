@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import "package:sqflite/sqflite.dart";
 
 import "../data/notes_repo.dart";
 import "../models/notes.dart";
@@ -63,7 +62,42 @@ class DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
-  void delete() {}
+  Future<void> delete() async {
+    final confirmed = await showDialog(
+      context: context,
+      builder: (dContext) => AlertDialog(
+        title: const Text('Delete Note?'),
+        content: const Text("This note will be permanently deleted."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dContext, false),
+            child: const Text("Cancel"),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red.shade700),
+            onPressed: () => Navigator.pop(dContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await NotesRepo.instance.delete(note.id);
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not delete the note")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
