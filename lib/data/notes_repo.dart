@@ -17,7 +17,7 @@ class NotesRepo {
 
     _db = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute("""
         create table notes_table (
@@ -25,9 +25,21 @@ class NotesRepo {
           title text not null,
           notes text not null,
           category text not null,
-          created_at text not null
+          created_at text not null,
+          image_path text,
+          latitude real,
+          longitude real
         )
         """);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(
+            "alter table notes_table add column image_path text",
+          );
+          await db.execute("alter table notes_table add column latitude real");
+          await db.execute("alter table notes_table add column longitude real");
+        }
       },
     );
 

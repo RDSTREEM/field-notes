@@ -1,5 +1,11 @@
 import "package:flutter/material.dart";
 import "package:uuid/uuid.dart";
+import "package:image_picker/image_picker.dart";
+import "package:path_provider/path_provider.dart";
+import 'package:path/path.dart' as p;
+import "package:geolocator/geolocator.dart";
+
+import "dart:io";
 
 import '../models/notes.dart';
 import "../colors.dart";
@@ -16,11 +22,19 @@ class AddScreen extends StatefulWidget {
 }
 
 class AddScreenState extends State<AddScreen> {
+  final imagePicker = ImagePicker();
+
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final notesController = TextEditingController();
 
   late String category;
+
+  String? path;
+  double? latitude;
+  double? longitude;
+
+  bool loc = false;
 
   @override
   void initState() {
@@ -31,6 +45,9 @@ class AddScreenState extends State<AddScreen> {
     titleController.text = note?.title ?? '';
     notesController.text = note?.notes ?? '';
     category = note?.category ?? "Nature";
+    path = note?.imagePath;
+    latitude = note?.latitude;
+    longitude = note?.longitude;
   }
 
   @override
@@ -38,6 +55,40 @@ class AddScreenState extends State<AddScreen> {
     titleController.dispose();
     notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> pick(ImageSource source) async {
+    try {
+      final picked = await imagePicker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxHeight: 2000,
+      );
+
+      if (picked == null || !mounted) return;
+
+      final dir = await getApplicationSupportDirectory();
+      final pDir = Directory(p.join(dir.path, "photos"));
+
+      await pDir.create(recursive: true);
+
+      final ext = p.extension(picked.path);
+      final dest = p.join(pDir.path, "${const Uuid().v4()}$ext");
+
+      await File(picked.path).copy(dest);
+
+      if (!mounted) return;
+
+      setState(() {
+        path = dest;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not attach this photo")),
+      );
+    }
   }
 
   Future<void> saveNote() async {
@@ -51,6 +102,9 @@ class AddScreenState extends State<AddScreen> {
       notes: notesController.text.trim(),
       category: category,
       createdAt: existing?.createdAt ?? DateTime.now().toUtc(),
+      imagePath: path ?? existing?.imagePath,
+      latitude: latitude ?? existing?.latitude,
+      longitude: longitude ?? existing?.longitude,
     );
 
     try {
