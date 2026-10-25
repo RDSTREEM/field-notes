@@ -22,12 +22,7 @@ class NoteCard extends StatelessWidget {
         side: const BorderSide(color: Color(0xFFE8E5DA)),
       ),
       child: ListTile(
-        /* onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => DetailsScreen(note: note)),
-          );
-        }, */
+        onTap: tap,
         contentPadding: const EdgeInsets.all(20),
         leading: Container(
           padding: const EdgeInsets.all(15),
