@@ -42,7 +42,7 @@ class DetailsScreenState extends State<DetailsScreen> {
       "December",
     ];
 
-    return "${months[d.month - 1]} ${d.day} ${d.year}";
+    return "${months[d.month - 1]} ${d.day}, ${d.year}";
   }
 
   Future<void> edit() async {
@@ -102,7 +102,7 @@ class DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: forest,
+      backgroundColor: paper,
       appBar: AppBar(
         backgroundColor: paper,
         title: Text("Field Journal"),
@@ -136,12 +136,22 @@ class DetailsScreenState extends State<DetailsScreen> {
                   note.category.toUpperCase(),
                   style: const TextStyle(
                     color: forest,
-                    fontSize: 14,
+                    fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 2,
+                    letterSpacing: 1.2,
                   ),
                 ),
               ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            note.title,
+            style: TextStyle(
+              color: forest,
+              fontSize: 32,
+              height: 1.15,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 14),
@@ -149,7 +159,7 @@ class DetailsScreenState extends State<DetailsScreen> {
             children: [
               const Icon(Icons.calendar_today_outlined, size: 15, color: muted),
               const SizedBox(width: 8),
-              Text(date, style: const TextStyle(color: muted, fontSize: 14)),
+              Text(date, style: const TextStyle(color: muted, fontSize: 13)),
             ],
           ),
           const SizedBox(height: 32),
@@ -157,9 +167,9 @@ class DetailsScreenState extends State<DetailsScreen> {
             "FIELD NOTES",
             style: TextStyle(
               color: muted,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.5,
             ),
           ),
           const SizedBox(height: 14),

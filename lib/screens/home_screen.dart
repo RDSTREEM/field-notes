@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      ...notes.map((note) => noteCard(note)),
+                      ...notes.map((note) => NoteCard(note: note)),
                     ],
                     SizedBox(
                       width: double.infinity,
