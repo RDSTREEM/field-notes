@@ -152,6 +152,27 @@ class DetailsScreenState extends State<DetailsScreen> {
               Text(date, style: const TextStyle(color: muted, fontSize: 14)),
             ],
           ),
+          const SizedBox(height: 32),
+          const Text(
+            "FIELD NOTES",
+            style: TextStyle(
+              color: muted,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            note.notes.isEmpty
+                ? "No notes were recorded for this one."
+                : note.notes,
+            style: const TextStyle(
+              color: Color(0xFF30382F),
+              fontSize: 16,
+              height: 1.8,
+            ),
+          ),
         ],
       ),
     );
