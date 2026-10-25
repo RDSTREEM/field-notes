@@ -7,7 +7,9 @@ import "../data/notes_repo.dart";
 import "../models/category.dart";
 
 class AddScreen extends StatefulWidget {
-  const AddScreen({super.key});
+  final Notes? note;
+
+  const AddScreen({super.key, this.note});
 
   @override
   State<AddScreen> createState() => AddScreenState();
@@ -18,7 +20,18 @@ class AddScreenState extends State<AddScreen> {
   final titleController = TextEditingController();
   final notesController = TextEditingController();
 
-  String category = "Nature";
+  late String category;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final note = widget.note;
+
+    titleController.text = note?.title ?? '';
+    notesController.text = note?.notes ?? '';
+    category = note?.category ?? "Nature";
+  }
 
   @override
   void dispose() {
@@ -30,6 +43,8 @@ class AddScreenState extends State<AddScreen> {
   Future<void> saveNote() async {
     if (!formKey.currentState!.validate()) return;
 
+    final existing = widget.note;
+
     final note = Notes(
       id: const Uuid().v4(),
       title: titleController.text.trim(),
@@ -39,7 +54,13 @@ class AddScreenState extends State<AddScreen> {
     );
 
     try {
-      await NotesRepo.instance.create(note);
+      final repo = NotesRepo.instance;
+
+      if (existing == null) {
+        await repo.create(note);
+      } else {
+        await repo.update(note);
+      }
 
       if (!mounted) return;
       Navigator.pop(context, true);
