@@ -99,7 +99,7 @@ class NotesRepo {
     final conditions = <String>[];
     final args = <Object?>[];
 
-    if (trimmed.isEmpty) {
+    if (trimmed.isNotEmpty) {
       conditions.add("(title like ? or notes like ?)");
       final pattern = "%$trimmed%";
       args.addAll([pattern, pattern]);

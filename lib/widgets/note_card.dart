@@ -14,7 +14,7 @@ class NoteCard extends StatelessWidget {
     return Card(
       color: paper,
       elevation: 0,
-      margin: const EdgeInsets.only(bottom: 30),
+      margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(20),
         side: const BorderSide(color: Color(0xFFE8E5DA)),
@@ -40,7 +40,7 @@ class NoteCard extends StatelessWidget {
           style: const TextStyle(color: forest, fontWeight: FontWeight.w700),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 30),
+          padding: const EdgeInsets.only(top: 10),
           child: Text(
             '${note.category} ${note.createdAt}'
             '${note.notes.isEmpty ? '' : '\n ${note.notes}'}',

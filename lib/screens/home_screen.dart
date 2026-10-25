@@ -107,12 +107,10 @@ class HomeScreenState extends State<HomeScreen> {
     );
 
     if (deleted == true && mounted) {
-      await loadNotes();
+      await filter();
     } else if (mounted) {
-      await loadNotes();
+      await filter();
     }
-
-    filter();
   }
 
   Future<void> filter() async {
@@ -296,6 +294,8 @@ class HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
 
+                    const SizedBox(height: 10),
+
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -337,6 +337,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     // const SizedBox(height: 88),
+                    const SizedBox(height: 10),
 
                     if (loading)
                       const Center(
@@ -356,7 +357,7 @@ class HomeScreenState extends State<HomeScreen> {
                         ],
                       )
                     else if (notes.isEmpty)
-                      emptyState()
+                      emptyState(f: q.trim().isNotEmpty || cat != null)
                     else ...[
                       const Text(
                         "RECENT DISCOVERIES",
@@ -401,42 +402,59 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
 
-Widget emptyState() {
-  return Padding(
-    padding: EdgeInsetsGeometry.symmetric(vertical: 24),
-    child: Column(
-      children: [
-        Center(
-          child: Icon(
-            Icons.nature_outlined,
-            size: 54,
-            color: forest.withValues(alpha: 0.6),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: Text(
-            "The world is full of little wonder.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: forest,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
+  Widget emptyState({bool f = false}) {
+    return Padding(
+      padding: EdgeInsetsGeometry.symmetric(vertical: 24),
+      child: Column(
+        children: [
+          Center(
+            child: Icon(
+              Icons.nature_outlined,
+              size: 54,
+              color: forest.withValues(alpha: 0.6),
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        const Center(
-          child: Text(
-            "Your first discovery is waiting to be recorded.",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: muted, fontSize: 13, height: 15),
+          const SizedBox(height: 12),
+          Center(
+            child: Text(
+              f
+                  ? "No matching discoveries"
+                  : "The world is full of little wonder.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: forest,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    ),
-  );
+          const SizedBox(height: 12),
+          Center(
+            child: Text(
+              f
+                  ? "Try another search or clear your filters."
+                  : "Your first discovery is waiting to be recorded.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: muted, fontSize: 13, height: 1.5),
+            ),
+          ),
+          if (f) ...[
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: () {
+                searchController.clear();
+                q = "";
+                cat = null;
+                filter();
+              },
+              label: const Text("Clear Filters"),
+              icon: const Icon(Icons.clear),
+            ),
+          ],
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
 }
